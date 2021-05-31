@@ -34,7 +34,7 @@ You are free to use any open source api of your choice.
 
 # All Tasks and Complete Tasks
 
-This section/screen you will need to demonstrate your skills related to state management.
+This section/screen you will need to demonstrate your skills related to state management. Please use a state management lib of your choice i.e provider, bloc, riverpod, getX etc. 
 Its a simple todo app where you will need to fetch data from firebase firestore and update the ui according to there completed status.
 The user should be able to complete, read, update and delete the tasks i.e CRUD operations. 
 The data should be update according in firebase firestore as well as reflect in the ui according as soon as one of the operations is done. Try to notify the user by showing some sort of message based on there operations.
