@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:morphosis_flutter_demo/cubit/task_cubit.dart';
@@ -65,8 +64,7 @@ class TasksPage extends StatelessWidget {
             return ListView.builder(
               itemCount: tasks?.length,
               itemBuilder: (context, index) {
-
-                if(tasks.length==0){
+                if (tasks.length == 0) {
                   return Center(
                     child: Text('Add Task'),
                   );
@@ -97,7 +95,7 @@ class TasksPage extends StatelessWidget {
 }
 
 class _Task extends StatelessWidget {
-  _Task(this.task,{this.cPage=false});
+  _Task(this.task, {this.cPage = false});
 
   final Task? task;
   final bool cPage;
@@ -114,7 +112,7 @@ class _Task extends StatelessWidget {
         .markComplete(FirebaseManager.shared.tasksRef, id);
   }
 
-  void _view(BuildContext context) async  {
+  void _view(BuildContext context) async {
     await Navigator.push(
       context,
       MaterialPageRoute(
@@ -137,21 +135,27 @@ class _Task extends StatelessWidget {
               : Icons.check_box_outline_blank,
         ),
         onPressed: () {
-          !this.cPage?
-          _toggleComplete(context, task?.id): null;
+          !this.cPage ? _toggleComplete(context, task?.id) : null;
         },
       ),
       title: Text(task?.title ?? ""),
       subtitle: Text(task?.description ?? ""),
-      trailing: this.cPage?IconButton(onPressed: null, icon: Icon(Icons.delete,color: Colors.transparent,)):IconButton(
-        icon: Icon(
-          Icons.delete,
-        ),
-        onPressed: () {
-          _delete(context, task?.id);
-        },
-      ),
-      onTap: () => this.cPage?null: _view(context),
+      trailing: this.cPage
+          ? IconButton(
+              onPressed: null,
+              icon: Icon(
+                Icons.delete,
+                color: Colors.transparent,
+              ))
+          : IconButton(
+              icon: Icon(
+                Icons.delete,
+              ),
+              onPressed: () {
+                _delete(context, task?.id);
+              },
+            ),
+      onTap: () => this.cPage ? null : _view(context),
     );
   }
 }
