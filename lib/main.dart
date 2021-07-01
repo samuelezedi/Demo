@@ -12,7 +12,7 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 const title = 'Morphosis Demo';
-
+int currentPage = 0;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 

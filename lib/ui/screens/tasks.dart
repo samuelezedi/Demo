@@ -73,6 +73,7 @@ class TasksPage extends StatelessWidget {
                 }
                 return _Task(
                   tasks?[index],
+                  cPage: completedPage,
                 );
               },
             );
@@ -96,9 +97,10 @@ class TasksPage extends StatelessWidget {
 }
 
 class _Task extends StatelessWidget {
-  _Task(this.task);
+  _Task(this.task,{this.cPage=false});
 
   final Task? task;
+  final bool cPage;
 
   void _delete(context, id) {
     //TODO implement delete to firestore
@@ -112,8 +114,8 @@ class _Task extends StatelessWidget {
         .markComplete(FirebaseManager.shared.tasksRef, id);
   }
 
-  void _view(BuildContext context) {
-    Navigator.push(
+  void _view(BuildContext context) async  {
+    await Navigator.push(
       context,
       MaterialPageRoute(
           builder: (context) => BlocProvider(
@@ -121,6 +123,8 @@ class _Task extends StatelessWidget {
                 child: TaskPage(task: task, edit: true),
               )),
     );
+    BlocProvider.of<TaskCubit>(context)
+        .fetchTasks(FirebaseManager.shared.tasksRef);
   }
 
   @override
@@ -133,12 +137,13 @@ class _Task extends StatelessWidget {
               : Icons.check_box_outline_blank,
         ),
         onPressed: () {
-          _toggleComplete(context, task?.id);
+          !this.cPage?
+          _toggleComplete(context, task?.id): null;
         },
       ),
       title: Text(task?.title ?? ""),
       subtitle: Text(task?.description ?? ""),
-      trailing: IconButton(
+      trailing: this.cPage?IconButton(onPressed: null, icon: Icon(Icons.delete,color: Colors.transparent,)):IconButton(
         icon: Icon(
           Icons.delete,
         ),
@@ -146,7 +151,7 @@ class _Task extends StatelessWidget {
           _delete(context, task?.id);
         },
       ),
-      onTap: () => _view(context),
+      onTap: () => this.cPage?null: _view(context),
     );
   }
 }

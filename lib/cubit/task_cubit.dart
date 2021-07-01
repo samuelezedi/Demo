@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:meta/meta.dart';
+import 'package:morphosis_flutter_demo/main.dart';
 import 'package:morphosis_flutter_demo/non_ui/modal/task.dart';
 
 part 'task_state.dart';
@@ -14,7 +15,6 @@ class TaskCubit extends Cubit<TaskState> {
     emit(TaskLoading());
     QuerySnapshot data = await taskRef.get();
     if (data.docs.length > 0) {
-
       taskLoaded(data,completedOnly:completedOnly);
     }
   }
@@ -69,10 +69,7 @@ class TaskCubit extends Cubit<TaskState> {
     emit(TaskInitial(values));
   }
 
-  void onTabTapped(int index) {
-    var currentState = state;
-    if (currentState is TaskInitial) {
-      emit(TaskInitial(currentState.tasks));
-    }
+  void igniteLoadingState() {
+    emit(TaskLoading());
   }
 }
