@@ -3,10 +3,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:morphosis_flutter_demo/non_ui/modal/task.dart';
 
 class FirebaseManager {
-  static FirebaseManager _one;
+  static FirebaseManager? _one;
 
   static FirebaseManager get shared =>
-      (_one == null ? (_one = FirebaseManager._()) : _one);
+      (_one = FirebaseManager._());
   FirebaseManager._();
 
   Future<void> initialise() => Firebase.initializeApp();
@@ -21,8 +21,8 @@ class FirebaseManager {
   List<Task> get tasks => mockData.map((t) => Task.fromJson(t)).toList();
 
   //TODO: implement firestore CRUD functions here
-  void addTask(Task task) {
-    tasksRef.add(task.toJson());
+  void addTask(Task? task) {
+    tasksRef.add(task?.toJson());
   }
 }
 

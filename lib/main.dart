@@ -1,14 +1,25 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:morphosis_flutter_demo/cubit/task_cubit.dart';
+import 'package:morphosis_flutter_demo/non_ui/modal/user.dart';
+import 'package:morphosis_flutter_demo/non_ui/modal/weather.dart';
 import 'package:morphosis_flutter_demo/non_ui/repo/firebase_manager.dart';
 import 'package:morphosis_flutter_demo/ui/screens/index.dart';
 import 'package:morphosis_flutter_demo/ui/widgets/error_widget.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 const title = 'Morphosis Demo';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Hive.initFlutter();
+  Hive.registerAdapter(UserAdapter());
+  await Hive.openBox<User>('user');
+
   runZonedGuarded(() {
     runApp(FirebaseApp());
   }, (error, stackTrace) {
@@ -34,7 +45,7 @@ class _FirebaseAppState extends State<FirebaseApp> {
     debugPrint("firebase initialized");
 
     // Pass all uncaught errors to Crashlytics.
-    Function originalOnError = FlutterError.onError;
+    Function originalOnError = FlutterError.presentError;
     FlutterError.onError = (FlutterErrorDetails errorDetails) async {
       // Forward to original handler.
       originalOnError(errorDetails);
@@ -103,6 +114,9 @@ class App extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: title,
+      theme: ThemeData(
+        primarySwatch: Colors.blue
+      ),
       home: IndexPage(),
     );
   }

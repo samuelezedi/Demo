@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:morphosis_flutter_demo/cubit/task_cubit.dart';
 import 'package:morphosis_flutter_demo/non_ui/repo/firebase_manager.dart';
 import 'package:morphosis_flutter_demo/ui/screens/home.dart';
 import 'package:morphosis_flutter_demo/ui/screens/tasks.dart';
@@ -21,14 +23,18 @@ class _IndexPageState extends State<IndexPage> {
   Widget build(BuildContext context) {
     List<Widget> children = [
       HomePage(),
-      TasksPage(
-        title: 'All Tasks',
-        tasks: FirebaseManager.shared.tasks,
+      BlocProvider(
+        create: (context) => TaskCubit(),
+        child: TasksPage(
+          title: 'All Tasks',
+        ),
       ),
-      TasksPage(
-        title: 'Completed Tasks',
-        tasks:
-            FirebaseManager.shared.tasks.where((t) => t.isCompleted).toList(),
+      BlocProvider(
+        create: (context) => TaskCubit(),
+        child: TasksPage(
+          title: 'Completed Tasks',
+          completedPage: true,
+        ),
       )
     ];
 

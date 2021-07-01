@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'task.g.dart';
@@ -6,25 +7,25 @@ part 'task.g.dart';
 class Task {
   Task();
 
-  String id;
-  String title;
-  String description;
+  String? id;
+  String? title;
+  String? description;
   @JsonKey(name: 'completed_at')
-  DateTime completedAt;
+  Timestamp? completedAt;
 
   bool get isNew {
-    return id == null;
+    return id==null;
   }
 
   bool get isCompleted {
-    return completedAt != null;
+    return completedAt!=null;
   }
 
   void toggleComplete() {
     if (isCompleted) {
       completedAt = null;
     } else {
-      completedAt = DateTime.now();
+      completedAt = Timestamp.now();
     }
   }
 

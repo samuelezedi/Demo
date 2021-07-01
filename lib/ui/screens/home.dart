@@ -1,8 +1,17 @@
+import 'dart:convert';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:morphosis_flutter_demo/non_ui/modal/user.dart';
+import 'package:morphosis_flutter_demo/non_ui/modal/weather.dart';
+import 'package:morphosis_flutter_demo/non_ui/repo/home_feeds_manager.dart';
+import 'package:morphosis_flutter_demo/services/boxes.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key key}) : super(key: key);
+  const HomePage({Key? key}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -10,16 +19,38 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   TextEditingController _searchTextField = TextEditingController();
+  bool searching = false;
 
   @override
   void initState() {
-    _searchTextField.text = "Search";
     super.initState();
+    initializeHomeData();
+  }
+
+  addUser() {
+    initializeHomeData();
+  }
+
+  deleteUser(index) {
+    Boxes.getUsers().deleteAt(index);
+  }
+
+  initializeHomeData() async {
+    Map data = await HomeFeedsRepo.getUsers();
+
+    final user = User()
+      ..name = "${data['name']}"
+      ..username = "${data['username']}"
+      ..email = "${data['email']}"
+      ..id = "${data['id']}";
+
+    Boxes.getUsers().add(user);
   }
 
   @override
   void dispose() {
     _searchTextField.dispose();
+    // Hive.close();
     super.dispose();
   }
 
@@ -30,7 +61,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Home"),
-        actions: [],
+        actions: [IconButton(onPressed: addUser, icon: Icon(Icons.refresh))],
       ),
       body: Container(
         padding: EdgeInsets.all(15),
@@ -40,24 +71,68 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            /* In this section we will be testing your skills with network and local storage. You need to fetch data from any open source api from the internet. 
-             E.g: 
-             https://any-api.com/
-             https://rapidapi.com/collection/best-free-apis?utm_source=google&utm_medium=cpc&utm_campaign=Beta&utm_term=%2Bopen%20%2Bsource%20%2Bapi_b&gclid=Cj0KCQjw16KFBhCgARIsALB0g8IIV107-blDgIs0eJtYF48dAgHs1T6DzPsxoRmUHZ4yrn-kcAhQsX8aAit1EALw_wcB
-             Implement setup for network. You are free to use package such as Dio, Choppper or Http can ve used as well.
-             Upon fetching the data try to store thmm locally. You can use any local storeage. 
-             Upon Search the data should be filtered locally and should update the UI.
-            */
-
             CupertinoSearchTextField(
               controller: _searchTextField,
+              placeholder: "Search",
+              onChanged: (input) {
+                if (input.trim() == "") {
+                  setState(() {
+                    searching = false;
+                  });
+                } else {
+                  setState(() {
+                    searching = true;
+                  });
+                }
+              },
             ),
-            Spacer(),
-            Text(
-              "Call any api you like from open apis and show them in a list. ",
-              textAlign: TextAlign.center,
+            SizedBox(
+              height: 25,
             ),
-            Spacer(),
+            ValueListenableBuilder<Box<User>>(
+              valueListenable: Boxes.getUsers().listenable(),
+              builder: (context, box, _) {
+                final userView = box.values
+                    .where((element) {
+                      if (searching) {
+                        print(_searchTextField.text);
+                        return element.username
+                                .toString()
+                                .toLowerCase()
+                                .contains(
+                                    _searchTextField.text.toLowerCase()) ||
+                            element.name
+                                .toString()
+                                .toLowerCase()
+                                .contains(_searchTextField.text.toLowerCase());
+                      } else {
+                        return true;
+                      }
+                    })
+                    .toList()
+                    .cast<User>();
+                return Expanded(
+                  child: ListView.builder(
+                      itemCount: userView.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          leading: Text(userView[index].id.toString()),
+                          title: Text(userView[index].name.toString()),
+                          subtitle: Text(userView[index].username.toString()),
+                          trailing: IconButton(
+                            onPressed: () {
+                              deleteUser(index);
+                            },
+                            icon: Icon(
+                              Icons.delete,
+                              color: Colors.red,
+                            ),
+                          ),
+                        );
+                      }),
+                );
+              },
+            ),
           ],
         ),
       ),

@@ -8,10 +8,10 @@ class ErrorMessage extends StatelessWidget {
     @required this.onTap,
   });
 
-  final String title;
-  final String message;
-  final String buttonTitle;
-  final VoidCallback onTap;
+  final String? title;
+  final String? message;
+  final String? buttonTitle;
+  final VoidCallback? onTap;
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -26,12 +26,12 @@ class ErrorMessage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(title,
+                  Text(title??"",
                       textAlign: TextAlign.center,
                       style:
                           TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                   SizedBox(height: 10),
-                  Text(message,
+                  Text(message??"",
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 16)),
                   SizedBox(height: 20),
@@ -39,7 +39,7 @@ class ErrorMessage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       ElevatedButton(
-                        child: Text(buttonTitle),
+                        child: Text(buttonTitle??""),
                         onPressed: onTap,
                       ),
                     ],
